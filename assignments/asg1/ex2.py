@@ -11,7 +11,7 @@ Xa = np.concatenate((x1,x2), axis = 1)
 Xb = np.concatenate((x1,x2,x3), axis = 1)
 
 # 3. Find optimal weights: w* = (X'X)^(-1) * X' * Y
-# a)
+# a) and b)
 Xa_tp = np.transpose(Xa)
 Xb_tp = np.transpose(Xb)
 Wa = np.dot(np.dot(np.linalg.inv(np.dot(Xa_tp, Xa)), Xa_tp), Y)
