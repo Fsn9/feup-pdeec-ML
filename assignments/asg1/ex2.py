@@ -10,8 +10,6 @@ Y = np.array([1.5, 2.8, 1.7, 1.3, 5.0]).reshape(-1, 1)
 Xa = np.concatenate((x1,x2), axis = 1)
 Xb = np.concatenate((x1,x2,x3), axis = 1)
 
-print(f'Xashape: {Xa.shape}')
-
 # 3. Find optimal weights: w* = (X'X)^(-1) * X' * Y
 # a)
 Xa_tp = np.transpose(Xa)
