@@ -15,14 +15,37 @@ Xb = np.concatenate((x1,x2,x3), axis = 1)
 Wa = np.dot(np.dot(np.linalg.inv(np.dot(Xa.T, Xa)), Xa.T), Y)
 Wb = np.dot(np.dot(np.linalg.inv(np.dot(Xb.T, Xb)), Xb.T), Y)
 
-print(f'Solution for a) is: {Wa}')
-print(f'Solution for b) is: {Wb}')
+print('# Computing optimal weights')
+
+print(f'Solution for a) is:\n{Wa}')
+print(f'Solution for b) is:\n{Wb}')
 
 # 4. Test with train inputs
-Xa_test = np.array([331,15])
-Xb_test = np.array([331,15,346])
-y_pred_a = np.dot(Wa.T, Xa_test)
-y_pred_b = np.dot(Wb.T, Xb_test)
+print(f'Predictions for model a) are:\n{np.dot(Xa, Wa)}')
+print(f'Predictions for model b) are:\n{np.dot(Xb, Wb)}\n')
 
-print(f'Predictions for model a) are: {np.dot(Xa, Wa)}')
-print(f'Predictions for model b) are: {np.dot(Xb, Wb)}')
+# 5. Test uniqueness of solution
+A, B = np.dot(Xa.T, Xa), np.dot(Xb.T, Xb)
+detA, detB = np.linalg.det(A), np.linalg.det(B)
+print('# Testing solution uniqueness')
+
+## 5.1. If determinant of A''A is > 0
+print('## Determinants A''A')
+print(f"Determinant of A''A for model a): {detA}")
+print(f"Determinant of A''A for model b): {detB}")
+
+## 5.2. If singular values matrix has at least one singular value != 0
+ua, sa, vha = np.linalg.svd(A)
+ub, sb, vhb = np.linalg.svd(B)
+Sa, Sb = np.diag(sa), np.diag(sb)
+print('## Singular value decomposition')
+print(f'Sa is:\n{Sa}')
+print(f'Sb is:\n{Sb}')
+rank_Sa = np.linalg.matrix_rank(Sa)
+rank_Sb = np.linalg.matrix_rank(Sb)
+
+if rank_Sa < len(sa):
+	print(f'>> Model a) has not an unique solution because rank of Sa {rank_Sa} < len(sa) {len(sa)}')
+if rank_Sb < len(sb):
+	print(f'>> Model b) has not an unique solution because rank of Sb {rank_Sb} < len(sb) {len(sb)}')
+
