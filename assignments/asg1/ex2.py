@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 # 1. Saving data
 x1 = np.array([340, 665, 368, 331, 954]).reshape(-1, 1)
@@ -9,11 +10,13 @@ Y = np.array([1.5, 2.8, 1.7, 1.3, 5.0]).reshape(-1, 1)
 # 2. Make inputs X for both a) and b)
 Xa = np.concatenate((x1,x2), axis = 1)
 Xb = np.concatenate((x1,x2,x3), axis = 1)
+## Also squared inputs
+A, B = np.dot(Xa.T, Xa), np.dot(Xb.T, Xb)
 
 # 3. Find optimal weights: w* = (X'X)^(-1) * X' * Y
 # a) and b)
-Wa = np.dot(np.dot(np.linalg.inv(np.dot(Xa.T, Xa)), Xa.T), Y)
-Wb = np.dot(np.dot(np.linalg.inv(np.dot(Xb.T, Xb)), Xb.T), Y)
+Wa = np.dot(np.dot(np.linalg.inv(A), Xa.T), Y)
+Wb = np.dot(np.dot(np.linalg.inv(B), Xb.T), Y)
 
 print('# Computing optimal weights')
 
@@ -25,7 +28,6 @@ print(f'Predictions for model a) are:\n{np.dot(Xa, Wa)}')
 print(f'Predictions for model b) are:\n{np.dot(Xb, Wb)}\n')
 
 # 5. Test uniqueness of solution
-A, B = np.dot(Xa.T, Xa), np.dot(Xb.T, Xb)
 detA, detB = np.linalg.det(A), np.linalg.det(B)
 print('# Testing solution uniqueness')
 
@@ -49,3 +51,25 @@ if rank_Sa < len(sa):
 if rank_Sb < len(sb):
 	print(f'>> Model b) has not an unique solution because rank of Sb {rank_Sb} < len(sb) {len(sb)}')
 
+# 5.3. Better approach to overcome solution not being unique
+## Using regularization with a lambda parameter
+print('\n# Testing regularization to improve model b')
+lambdas = [1e-2, 1e-1, 1, 10, 20, 50]
+print(f'## Lambdas to test: {lambdas}')
+B2_all = [B + lambda_ * np.eye(B.shape[0]) for lambda_ in lambdas]
+detB2_all = [np.linalg.det(B2) for B2 in B2_all]
+Wb2_all = [np.dot(np.dot(np.linalg.inv(B2), Xb.T), Y) for B2 in B2_all]
+sb2_all = [np.linalg.svd(B2)[1] for B2 in B2_all]
+y2_all = [np.dot(Xb, Wb2) for Wb2 in Wb2_all]
+mse_all = [np.square(y2 - Y).mean(axis = 0) for y2 in y2_all]
+
+print("## Regularized models testing")
+print(f"Determinants:\n{detB2_all}")
+print(f'Singular values:\n{sb2_all}')
+print(f'Regularized weights:\n{Wb2_all}')
+print(f'Predictions:\n{y2_all}')
+print(f'Mean squared errors:\n{mse_all}')
+
+plt.scatter(lambdas, mse_all, edgecolor = "black")
+plt.xlim([lambdas[0], lambdas[-1]])
+plt.show()
